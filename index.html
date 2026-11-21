@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PIZZARIA VICTÓRIA ANTUNES - ERP & Cardápio Digital</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    :root {
+      --primary-red: #B83214;
+      --accent-orange: #1B5E20;
+      --accent-gold: #F59E0B;
+      --dark-black: #1A1A1A;
+      --bg-light: #F9F9F9;
+      --card-bg: #FFFFFF;
+      --text-gray: #666666;
+      --border-color: #DDD;
+      --header-bg-overlay: rgba(255, 255, 255, 0.92);
+      --input-bg: #FFFFFF;
+      --input-text: #1A1A1A;
+    }
+
+    body.dark-theme {
+      --dark-black: #F5F5F5;
+      --bg-light: #121212;
+      --card-bg: #1E1E1E;
+      --text-gray: #B0B0B0;
+      --border-color: #333333;
+      --header-bg-overlay: rgba(18, 18, 18, 0.92);
+      --input-bg: #2A2A2A;
+      --input-text: #FFFFFF;
+    }
+
+    body {
+      background-color: var(--bg-light);
+      color: var(--dark-black);
+      padding-bottom: 90px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      background-image: linear-gradient(var(--header-bg-overlay), var(--header-bg-overlay)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1000&q=80');
+      background-size: cover;
+      background-position: center;
+      padding: 15px;
+      border-bottom: 3px solid var(--primary-red);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-logo-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 2px solid var(--primary-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .brand-logo h1 {
+      font-size: 1.05rem;
+      color: var(--dark-black);
+      font-weight: 800;
+      line-height: 1.15;
+    }
+
+    .brand-logo h1 span {
+      display: block;
+      color: var(--primary-red);
+      font-size: 0.95rem;
+    }
+
+    .right-header-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+    }
+
+    .lang-selector {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+      font-weight: bold;
+    }
+
+    .lang-btn {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--dark-black);
+    }
+
+    .lang-btn.active {
+      border-color: var(--primary-red);
+      background: #FFEBEB;
+      color: var(--primary-red);
+    }
+
+    body.dark-theme .lang-btn.active {
+      background: #421010;
+      color: #FF8A8A;
+    }
+
+    .lang-btn img {
+      width: 18px;
+      height: 12px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+
+    .theme-toggle-btn {
+      margin-top: 2px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--dark-black);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .header-titles {
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .header-titles .main-phrase {
+      font-size: 1rem;
+      font-weight: bold;
+      color: var(--primary-red);
+    }
+
+    .header-titles .sec-phrase {
+      font-size: 0.85rem;
+      color: var(--text-gray);
+    }
+
+    .search-bar {
+      padding: 12px 15px 5px 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--input-text);
+      border-radius: 25px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .categories-nav {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      padding: 10px 15px;
+      white-space: nowrap;
+      scrollbar-width: none;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .categories-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .cat-btn {
+      padding: 10px 18px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      background-color: var(--card-bg);
+      color: var(--dark-black);
+      font-weight: bold;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cat-btn.featured-cat {
+      border: 2px solid var(--accent-gold);
+      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.25);
+    }
+
+    .cat-btn.active {
+      background-color: var(--primary-red) !important;
+      color: #FFF !important;
+      border-color: var(--primary-red) !important;
+    }
+
+    .highlights-section {
+      padding: 10px 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .highlights-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--accent-orange);
+      text-transform: uppercase;
+    }
+
+    body.dark-theme .highlights-title {
+      color: var(--accent-gold);
+    }
+
+    .highlights-container {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      scrollbar-width: none;
+    }
+
+    .mini-card {
+      min-width: 155px;
+      width: 155px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border: 1px solid var(--border-color);
+    }
+
+    .mini-card img {
+      width: 100%;
+      height: 85px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
+
+    .mini-card h4 {
+      font-size: 0.82rem;
+      margin-bottom: 4px;
+      line-height: 1.2;
+      color: var(--dark-black);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .mini-card .price {
+      font-size: 0.88rem;
+      font-weight: bold;
+      color: var(--primary-red);
+    }
+
+    .mini-card .btn-add {
+      margin-top: 6px;
+      padding: 7px;
+      font-size: 0.78rem;
+      width: 100%;
+    }
+
+    .menu-section {
+      padding: 10px 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .category-group-heading {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--dark-black);
+      border-left: 4px solid var(--primary-red);
+      padding-left: 10px;
+      margin: 18px 0 12px 0;
+      text-transform: uppercase;
+    }
+
+    .category-group-heading.evident-heading {
+      background: linear-gradient(90deg, rgba(245, 158, 11, 0.22), rgba(27, 94, 32, 0.14));
+      border-left: 5px solid var(--accent-gold);
+      border-right: 2px solid var(--accent-gold);
+      padding: 9px 12px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .evident-pill {
+      background: var(--accent-gold);
+      color: #1A1A1A;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .cards-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    .card.evident-card {
+      border: 2px solid var(--accent-gold);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.16);
+    }
+
+    .card-img {
+      width: 100%;
+      height: 185px;
+      object-fit: cover;
+      border-radius: 8px;
+      background-color: #333;
+    }
+
+    .card-info h3 {
+      font-size: 1.1rem;
+      color: var(--dark-black);
+    }
+
+    .card-info p {
+      font-size: 0.86rem;
+      color: var(--text-gray);
+      margin-top: 4px;
+      line-height: 1.35;
+    }
+
+    .price-container {
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .old-price {
+      text-decoration: line-through;
+      color: #999;
+      font-size: 0.9rem;
+    }
+
+    .current-price {
+      font-size: 1.15rem;
+      font-weight: bold;
+      color: var(--primary-red);
+    }
+
+    .btn-add {
+      width: 100%;
+      padding: 12px;
+      background-color: var(--accent-orange);
+      color: #FFF;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .btn-add:hover {
+      opacity: 0.92;
+    }
+
+    .badge-destaque {
+      position: absolute;
+      top: 22px;
+      right: 22px;
+      background-color: var(--primary-red);
+      color: #FFF;
+      font-size: 0.72rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+      text-transform: uppercase;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(27, 94, 32, 0.95);
+      color: #FFF;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      z-index: 1000;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .floating-cart-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: var(--primary-red);
+      color: #FFF;
+      border: none;
+      padding: 14px 22px;
+      border-radius: 30px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      box-shadow: 0 4px 14px rgba(184, 50, 20, 0.45);
+      cursor: pointer;
+      z-index: 99;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .screen-container {
+      padding: 20px 15px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .screen-title {
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      text-align: center;
+      color: var(--dark-black);
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+      border: 1px solid var(--border-color);
+    }
+
+    .cart-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-qty {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border-color);
+      background: var(--card-bg);
+      color: var(--dark-black);
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      font-size: 0.9rem;
+      color: var(--dark-black);
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      background: var(--input-bg);
+      color: var(--input-text);
+      border-radius: 8px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .input-instruction {
+      font-size: 0.78rem;
+      color: var(--text-gray);
+      margin-top: 4px;
+      display: block;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 10px;
+      color: var(--dark-black);
+    }
+
+    .radio-group label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .cart-total {
+      font-size: 1.25rem;
+      font-weight: bold;
+      text-align: right;
+      margin: 15px 0;
+      color: var(--primary-red);
+    }
+
+    .actions-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .btn-secondary {
+      background: #666;
+      color: #FFF;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      flex: 1;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--primary-red);
+      color: #FFF;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      flex: 2;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-whatsapp {
+      background: #25D366;
+      color: #FFFFFF;
+      border: none;
+      padding: 14px;
+      border-radius: 8px;
+      width: 100%;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+    }
+
+    .success-card {
+      text-align: center;
+      background: var(--card-bg);
+      padding: 30px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      border: 1px solid var(--border-color);
+    }
+
+    .check-icon {
+      width: 60px;
+      height: 60px;
+      background: #1B5E20;
+      color: #FFF;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 35px;
+      margin: 0 auto 15px auto;
+    }
+
+    /* ESTILOS DO PAINEL ERP / ADMIN */
+    #admin-panel {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .erp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--primary-red);
+      padding-bottom: 10px;
+    }
+
+    .erp-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .stat-card h4 {
+      font-size: 0.85rem;
+      color: var(--text-gray);
+    }
+
+    .stat-card p {
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--primary-red);
+      margin-top: 5px;
+    }
+
+    .erp-table-container {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow-x: auto;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    table.erp-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.88rem;
+    }
+
+    table.erp-table th,
+    table.erp-table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    table.erp-table th {
+      background: rgba(184, 50, 20, 0.1);
+      color: var(--primary-red);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="toast" class="toast">Item adicionado ao carrinho!</div>
+
+  <!-- TELA 1: CARDÁPIO -->
+  <div id="screen-1">
+    <header>
+      <div class="header-top">
+        <div class="brand-logo" title="Duplo clique para abrir o ERP / Admin" ondblclick="openAdminERP()">
+          <div class="brand-logo-badge">
+            <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 34C10 20.7452 20.7452 10 34 10C47.2548 10 58 20.7452 58 34" stroke="#B83214" stroke-width="5" stroke-linecap="round"/>
+              <path d="M18 18L30 52L46 18" stroke="#1B5E20" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+              <polygon points="22,19 42,19 32,48" fill="#F59E0B" stroke="#B83214" stroke-width="2.5"/>
+              <circle cx="30" cy="26" r="3" fill="#B83214"/>
+              <circle cx="35" cy="33" r="2.5" fill="#B83214"/>
+              <rect x="8" y="31" width="48" height="10" rx="2" fill="#B83214"/>
+            </svg>
+          </div>
+          <h1>PIZZARIA <span>VICTÓRIA ANTUNES</span></h1>
+        </div>
+
+        <div class="right-header-actions">
+          <div class="lang-selector">
+            <div class="lang-btn active" id="lang-pt" onclick="changeLanguage('PT')">
+              <img src="https://flagcdn.com/w20/pt.png" alt="PT" /> PT
+            </div>
+            <span>|</span>
+            <div class="lang-btn" id="lang-en" onclick="changeLanguage('ENG')">
+              <img src="https://flagcdn.com/w20/gb.png" alt="ENG" /> ENG
+            </div>
+          </div>
+
+          <button class="theme-toggle-btn" id="theme-btn" onclick="toggleTheme()">
+            🌙 DARK
+          </button>
+        </div>
+      </div>
+
+      <div class="header-titles">
+        <div class="main-phrase" id="txt-main-phrase">Sabor que faz a diferença!</div>
+        <div class="sec-phrase" id="txt-sec-phrase">Ingredientes frescos e muito sabor! • Monte o pedido do seu jeito</div>
+      </div>
+    </header>
+
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Buscar pizzas, hambúrgueres, extra ou acompanhantes..." oninput="handleSearch()" />
+    </div>
+
+    <nav class="categories-nav" id="categories-nav"></nav>
+
+    <div class="highlights-section" id="highlights-section">
+      <div class="highlights-title" id="txt-highlights-title">⭐ Destaques da Casa</div>
+      <div class="highlights-container" id="highlights-container"></div>
+    </div>
+
+    <main class="menu-section" id="menu-container"></main>
+
+    <button class="floating-cart-btn" id="floating-btn" onclick="goToScreen(2)">
+      🛒 <span id="txt-view-order">Ver Pedido</span> (<span id="cart-count">0</span>)
+    </button>
+  </div>
+
+  <!-- TELA 2: RESUMO DO PEDIDO -->
+  <div id="screen-2" class="screen-container hidden">
+    <h2 class="screen-title" id="txt-cart-title">Resumo do Pedido</h2>
+    <div id="cart-items-list"></div>
+    <div class="cart-total" id="cart-total-val">Total: 0.00 MT</div>
+
+    <form id="order-form">
+      <div class="form-group">
+        <label id="lbl-service-type">Tipo de Atendimento *</label>
+        <div class="radio-group">
+          <label><input type="radio" name="orderType" value="local" checked onclick="toggleOrderType()" /> <span id="lbl-eat-in">Comer no Local</span></label>
+          <label><input type="radio" name="orderType" value="takeaway" onclick="toggleOrderType()" /> <span id="lbl-takeaway">Takeaway</span></label>
+          <label><input type="radio" name="orderType" value="delivery" onclick="toggleOrderType()" /> <span id="lbl-delivery">Delivery</span></label>
+        </div>
+      </div>
+
+      <div class="form-group" id="table-group">
+        <label for="table-num" id="lbl-table-num">Número da Mesa (opcional)</label>
+        <input type="text" id="table-num" placeholder="Ex: Mesa 04" />
+      </div>
+
+      <div class="form-group hidden" id="delivery-info-group">
+        <p style="font-size:0.85rem; color: var(--primary-red); margin-bottom: 8px;" id="lbl-delivery-fee">
+          * Taxa de Delivery: <b>A Combinar no WhatsApp</b>
+        </p>
+      </div>
+
+      <div class="form-group">
+        <label for="client-name" id="lbl-client-name">Nome Completo *</label>
+        <input type="text" id="client-name" required placeholder="Digite seu nome" onchange="captureLead()" />
+      </div>
+
+      <div class="form-group">
+        <label for="client-phone" id="lbl-client-phone">Telefone / WhatsApp *</label>
+        <input type="tel" id="client-phone" required placeholder="258880327498" onchange="captureLead()" />
+        <span class="input-instruction" id="lbl-phone-inst">Código do país + número. Ex: 258880327498</span>
+      </div>
+
+      <div class="form-group">
+        <label for="client-email" id="lbl-client-email">E-mail *</label>
+        <input type="email" id="client-email" required placeholder="seu@email.com" onchange="captureLead()" />
+      </div>
+
+      <div class="form-group">
+        <label for="client-address" id="lbl-client-address">Endereço Completo *</label>
+        <input type="text" id="client-address" required placeholder="Bairro, Rua, Casa nº..." />
+      </div>
+
+      <div class="form-group">
+        <label for="payment-method" id="lbl-payment">Forma de Pagamento *</label>
+        <select id="payment-method" required></select>
+      </div>
+
+      <div class="form-group">
+        <label for="client-obs" id="lbl-obs">Observações (opcional)</label>
+        <textarea id="client-obs" rows="2" placeholder="Ex: Sem cebola, molho especial à parte..."></textarea>
+      </div>
+
+      <div class="actions-group">
+        <button type="button" class="btn-secondary" id="btn-back" onclick="goToScreen(1)">Voltar</button>
+        <button type="submit" class="btn-primary" id="btn-confirm">Confirmar Pedido</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- TELA 3: CONFIRMAÇÃO DO PEDIDO -->
+  <div id="screen-3" class="screen-container hidden">
+    <div class="success-card">
+      <div class="check-icon">✓</div>
+      <h2 id="txt-success-title">Pedido recebido!</h2>
+      <p style="font-size: 1.3rem; font-weight: bold; margin: 10px 0; color: var(--primary-red);" id="order-number-display">#0000001</p>
+      <p style="margin-bottom: 20px; color: var(--text-gray); font-size: 0.95rem;" id="txt-success-msg">
+        Finalize o pedido enviando a mensagem via WhatsApp.
+      </p>
+      <a id="btn-whatsapp-direct" class="btn-whatsapp" href="#" target="_blank" rel="noopener noreferrer">
+        📲 <span id="txt-wa-btn">Enviar Pedido no WhatsApp</span>
+      </a>
+      <button class="btn-primary" style="width: 100%;" id="btn-new-order" onclick="startNewOrder()">Novo Pedido</button>
+    </div>
+  </div>
+
+  <!-- TELA 4: PAINEL ADMINISTRATIVO / ERP INTEGRADO -->
+  <div id="screen-admin" class="hidden">
+    <div id="admin-panel">
+      <div class="erp-header">
+        <h2>Painel ERP & Gestão - Pizzaria Victória Antunes</h2>
+        <div style="display: flex; gap: 10px;">
+          <button class="btn-primary" onclick="exportOrdersToCSV()" style="padding: 8px 14px; font-size: 0.85rem;">📥 Exportar CSV</button>
+          <button class="btn-secondary" onclick="goToScreen(1)" style="padding: 8px 14px; font-size: 0.85rem;">Cardápio</button>
+        </div>
+      </div>
+
+      <div class="erp-stats">
+        <div class="stat-card">
+          <h4>Total de Pedidos</h4>
+          <p id="erp-stat-count">0</p>
+        </div>
+        <div class="stat-card">
+          <h4>Faturamento Consolidado</h4>
+          <p id="erp-stat-revenue">0.00 MT</p>
+        </div>
+      </div>
+
+      <div class="erp-table-container">
+        <table class="erp-table">
+          <thead>
+            <tr>
+              <th>Data/Hora</th>
+              <th>Nº Pedido</th>
+              <th>Cliente</th>
+              <th>Tipo</th>
+              <th>Itens</th>
+              <th>Pagamento</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody id="erp-table-body">
+            <!-- Dados preenchidos via script dinamicamente -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // NÚMERO DE WHATSAPP OFICIAL (+258 88 032 7498)
+    const STORE_WHATSAPP = "258880327498";
+
+    const rawMenuData = [
+      // PIZZAS - TAMANHO MÉDIO
+      {
+        categoria: "PIZZAS • TAMANHO MÉDIO",
+        categoria_en: "PIZZAS • MEDIUM SIZE",
+        nome: "Pizza Chouriço (Médio)",
+        nome_en: "Chorizo Pizza (Medium)",
+        descricao: "Pizza tamanho médio com chouriço fatiado, molho de tomate e queijo.",
+        descricao_en: "Medium size pizza with sliced chorizo, tomato sauce and cheese.",
+        preco: "550.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO MÉDIO",
+        categoria_en: "PIZZAS • MEDIUM SIZE",
+        nome: "Pizza Frango (Médio)",
+        nome_en: "Chicken Pizza (Medium)",
+        descricao: "Pizza tamanho médio com frango temperado, molho de tomate e queijo.",
+        descricao_en: "Medium size pizza with seasoned chicken, tomato sauce and cheese.",
+        preco: "600.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO MÉDIO",
+        categoria_en: "PIZZAS • MEDIUM SIZE",
+        nome: "Pizza Carne (Médio)",
+        nome_en: "Beef Pizza (Medium)",
+        descricao: "Pizza tamanho médio com carne saborosa, molho de tomate e queijo.",
+        descricao_en: "Medium size pizza with savory beef, tomato sauce and cheese.",
+        preco: "600.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO MÉDIO",
+        categoria_en: "PIZZAS • MEDIUM SIZE",
+        nome: "Pizza Vegetariana (Médio)",
+        nome_en: "Vegetarian Pizza (Medium)",
+        descricao: "Pizza tamanho médio com vegetais frescos selecionados, molho de tomate e queijo.",
+        descricao_en: "Medium size pizza with selected fresh vegetables, tomato sauce and cheese.",
+        preco: "500.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO MÉDIO",
+        categoria_en: "PIZZAS • MEDIUM SIZE",
+        nome: "Pizza Especial da Casa (Médio)",
+        nome_en: "House Special Pizza (Medium)",
+        descricao: "Pizza tamanho médio com combinação especial da casa, molho de tomate e queijo.",
+        descricao_en: "Medium size pizza with special house combination, tomato sauce and cheese.",
+        preco: "650.00 MT",
+        promo: "",
+        destaque: "SIM",
+        imagem: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO MÉDIO",
+        categoria_en: "PIZZAS • MEDIUM SIZE",
+        nome: "Pizza Atum (Médio)",
+        nome_en: "Tuna Pizza (Medium)",
+        descricao: "Pizza tamanho médio com atum saboroso, molho de tomate e queijo.",
+        descricao_en: "Medium size pizza with tasty tuna, tomato sauce and cheese.",
+        preco: "600.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=800&q=80"
+      },
+
+      // PIZZAS - TAMANHO GRANDE
+      {
+        categoria: "PIZZAS • TAMANHO GRANDE",
+        categoria_en: "PIZZAS • LARGE SIZE",
+        nome: "Pizza Chouriço (Grande)",
+        nome_en: "Chorizo Pizza (Large)",
+        descricao: "Pizza tamanho grande com chouriço fatiado, molho de tomate e queijo.",
+        descricao_en: "Large size pizza with sliced chorizo, tomato sauce and cheese.",
+        preco: "650.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO GRANDE",
+        categoria_en: "PIZZAS • LARGE SIZE",
+        nome: "Pizza Frango (Grande)",
+        nome_en: "Chicken Pizza (Large)",
+        descricao: "Pizza tamanho grande com frango temperado, molho de tomate e queijo.",
+        descricao_en: "Large size pizza with seasoned chicken, tomato sauce and cheese.",
+        preco: "750.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO GRANDE",
+        categoria_en: "PIZZAS • LARGE SIZE",
+        nome: "Pizza Carne (Grande)",
+        nome_en: "Beef Pizza (Large)",
+        descricao: "Pizza tamanho grande com carne saborosa, molho de tomate e queijo.",
+        descricao_en: "Large size pizza with savory beef, tomato sauce and cheese.",
+        preco: "750.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO GRANDE",
+        categoria_en: "PIZZAS • LARGE SIZE",
+        nome: "Pizza Vegetariana (Grande)",
+        nome_en: "Vegetarian Pizza (Large)",
+        descricao: "Pizza tamanho grande com vegetais frescos selecionados, molho de tomate e queijo.",
+        descricao_en: "Large size pizza with selected fresh vegetables, tomato sauce and cheese.",
+        preco: "650.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO GRANDE",
+        categoria_en: "PIZZAS • LARGE SIZE",
+        nome: "Pizza Especial da Casa (Grande)",
+        nome_en: "House Special Pizza (Large)",
+        descricao: "Pizza tamanho grande com combinação especial da casa, molho de tomate e queijo.",
+        descricao_en: "Large size pizza with special house combination, tomato sauce and cheese.",
+        preco: "850.00 MT",
+        promo: "",
+        destaque: "SIM",
+        imagem: "https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "PIZZAS • TAMANHO GRANDE",
+        categoria_en: "PIZZAS • LARGE SIZE",
+        nome: "Pizza Atum (Grande)",
+        nome_en: "Tuna Pizza (Large)",
+        descricao: "Pizza tamanho grande com atum saboroso, molho de tomate e queijo.",
+        descricao_en: "Large size pizza with tasty tuna, tomato sauce and cheese.",
+        preco: "750.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1571407970349-bc81e7e96d47?auto=format&fit=crop&w=800&q=80"
+      },
+
+      // HAMBÚRGUERES
+      {
+        categoria: "HAMBÚRGUERES",
+        categoria_en: "BURGERS",
+        nome: "1 Clássico",
+        nome_en: "1 Classic",
+        descricao: "Carne, alface, tomate, cebola e molho da casa.",
+        descricao_en: "Beef, lettuce, tomato, onion and house sauce.",
+        preco: "250.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "HAMBÚRGUERES",
+        categoria_en: "BURGERS",
+        nome: "2 Cheese",
+        nome_en: "2 Cheese",
+        descricao: "Carne, queijo, alface, tomate e molho da casa.",
+        descricao_en: "Beef, cheese, lettuce, tomato and house sauce.",
+        preco: "300.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "HAMBÚRGUERES",
+        categoria_en: "BURGERS",
+        nome: "3 Fiambre & Queijo",
+        nome_en: "3 Ham & Cheese",
+        descricao: "Carne, fiambre, queijo, alface, tomate e molho especial da casa.",
+        descricao_en: "Beef, ham, cheese, lettuce, tomato and special house sauce.",
+        preco: "350.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "HAMBÚRGUERES",
+        categoria_en: "BURGERS",
+        nome: "4 Bacon & Cheese",
+        nome_en: "4 Bacon & Cheese",
+        descricao: "Carne, bacon crocante, queijo, alface, tomate e molho especial da casa.",
+        descricao_en: "Beef, crispy bacon, cheese, lettuce, tomato and special house sauce.",
+        preco: "400.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1553979459-d2229ba7433b?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "HAMBÚRGUERES",
+        categoria_en: "BURGERS",
+        nome: "5 Especial Victória",
+        nome_en: "5 Victoria Special",
+        descricao: "Carne, bacon, fiambre, queijo, alface, tomate e molho especial da casa.",
+        descricao_en: "Beef, bacon, ham, cheese, lettuce, tomato and special house sauce.",
+        preco: "450.00 MT",
+        promo: "",
+        destaque: "SIM",
+        imagem: "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=800&q=80"
+      },
+
+      // CATEGORIA EM EVIDÊNCIA: EXTRA
+      {
+        categoria: "EXTRA",
+        categoria_en: "EXTRA",
+        nome: "Queijo adicional",
+        nome_en: "Extra cheese",
+        descricao: "Queijo adicional (+30 MT).",
+        descricao_en: "Extra cheese (+30 MT).",
+        preco: "30.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "EXTRA",
+        categoria_en: "EXTRA",
+        nome: "Bacon adicional",
+        nome_en: "Extra bacon",
+        descricao: "Bacon adicional (+50 MT).",
+        descricao_en: "Extra bacon (+50 MT).",
+        preco: "50.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1606851094655-b2593a9af63f?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "EXTRA",
+        categoria_en: "EXTRA",
+        nome: "Carne adicional",
+        nome_en: "Extra beef",
+        descricao: "Carne adicional (+100 MT).",
+        descricao_en: "Extra beef (+100 MT).",
+        preco: "100.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "EXTRA",
+        categoria_en: "EXTRA",
+        nome: "Ovo estrelado",
+        nome_en: "Fried egg",
+        descricao: "Ovo estrelado (+30 MT).",
+        descricao_en: "Fried egg (+30 MT).",
+        preco: "30.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        categoria: "EXTRA",
+        categoria_en: "EXTRA",
+        nome: "Rúcula",
+        nome_en: "Arugula",
+        descricao: "Rúcula (+30 MT).",
+        descricao_en: "Arugula (+30 MT).",
+        preco: "30.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1515543904379-3d757afe72e4?auto=format&fit=crop&w=800&q=80"
+      },
+
+      // CATEGORIA EM EVIDÊNCIA: ACOMPANHANTES
+      {
+        categoria: "ACOMPANHANTES",
+        categoria_en: "ACCOMPANIMENTS",
+        nome: "Batatas fritas",
+        nome_en: "French fries",
+        descricao: "Batatas fritas (+100 MT).",
+        descricao_en: "French fries (+100 MT).",
+        preco: "100.00 MT",
+        promo: "",
+        destaque: "NAO",
+        imagem: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&w=800&q=80"
+      }
+    ];
+
+    let currentLang = 'PT';
+    let currentTheme = 'LIGHT';
+    let categoriesList = ['TODOS'];
+    let cart = [];
+    let activeCategory = 'TODOS';
+    let orderCounter = parseInt(localStorage.getItem('eaters_order_seq') || '1', 10);
+
+    const i18n = {
+      PT: {
+        mainPhrase: "Sabor que faz a diferença!",
+        secPhrase: "Ingredientes frescos e muito sabor! • Monte o pedido do seu jeito",
+        searchPlaceholder: "Buscar pizzas, hambúrgueres, extra ou acompanhantes...",
+        highlightsTitle: "⭐ Destaques da Casa",
+        viewOrder: "Ver Pedido",
+        cartTitle: "Resumo do Pedido",
+        serviceType: "Tipo de Atendimento *",
+        eatIn: "Comer no Local",
+        takeaway: "Takeaway",
+        delivery: "Delivery",
+        tableNum: "Número da Mesa (opcional)",
+        phTableNum: "Ex: Mesa 04",
+        deliveryFee: "* Taxa de Delivery: <b>A Combinar no WhatsApp</b>",
+        clientName: "Nome Completo *",
+        phClientName: "Digite seu nome",
+        clientPhone: "Telefone / WhatsApp *",
+        phClientPhone: "258880327498",
+        phoneInst: "Código do país + número. Ex: 258880327498",
+        clientEmail: "E-mail *",
+        phClientEmail: "seu@email.com",
+        clientAddress: "Endereço Completo *",
+        phClientAddress: "Bairro, Rua, Casa nº...",
+        payment: "Forma de Pagamento *",
+        paySelectDefault: "Selecione a forma de pagamento...",
+        payMobileMpesa: "Carteira Móvel (M-Pesa)",
+        payMobileEmola: "Carteira Móvel (e-Mola)",
+        payMobileMkesh: "Carteira Móvel (mKesh)",
+        payCard: "Cartão de Débito/Crédito",
+        payCash: "Dinheiro (Cash)",
+        obs: "Observações (opcional)",
+        phObs: "Ex: Sem cebola, molho especial à parte...",
+        btnBack: "Voltar",
+        btnConfirm: "Confirmar Pedido",
+        successTitle: "Pedido recebido!",
+        successMsg: "Finalize o pedido enviando a mensagem via WhatsApp.",
+        waBtn: "Enviar Pedido no WhatsApp",
+        btnNewOrder: "Novo Pedido",
+        toastAdd: "Item adicionado ao carrinho!",
+        emptyCart: "Seu carrinho está vazio.",
+        allCat: "TODOS",
+        addBtn: "Adicionar",
+        badgeHighlight: "DESTAQUE",
+        evidentLabel: "EM EVIDÊNCIA"
+      },
+      ENG: {
+        mainPhrase: "Flavor that makes the difference!",
+        secPhrase: "Fresh ingredients and great taste! • Customize your order",
+        searchPlaceholder: "Search pizzas, burgers, extra or accompaniments...",
+        highlightsTitle: "⭐ House Highlights",
+        viewOrder: "View Order",
+        cartTitle: "Order Summary",
+        serviceType: "Service Type *",
+        eatIn: "Dine-in",
+        takeaway: "Takeaway",
+        delivery: "Delivery",
+        tableNum: "Table Number (optional)",
+        phTableNum: "Ex: Table 04",
+        deliveryFee: "* Delivery Fee: <b>To be agreed on WhatsApp</b>",
+        clientName: "Full Name *",
+        phClientName: "Enter your full name",
+        clientPhone: "Phone / WhatsApp *",
+        phClientPhone: "258880327498",
+        phoneInst: "Country code + number. Ex: 258880327498",
+        clientEmail: "Email *",
+        phClientEmail: "your@email.com",
+        clientAddress: "Full Address *",
+        phClientAddress: "Neighborhood, Street, House No...",
+        payment: "Payment Method *",
+        paySelectDefault: "Select payment method...",
+        payMobileMpesa: "Mobile Wallet (M-Pesa)",
+        payMobileEmola: "Mobile Wallet (e-Mola)",
+        payMobileMkesh: "Mobile Wallet (mKesh)",
+        payCard: "Debit/Credit Card",
+        payCash: "Cash",
+        obs: "Notes (optional)",
+        phObs: "Ex: No onion, special sauce on the side...",
+        btnBack: "Back",
+        btnConfirm: "Confirm Order",
+        successTitle: "Order received!",
+        successMsg: "Finish your order by sending the message via WhatsApp.",
+        waBtn: "Send Order on WhatsApp",
+        btnNewOrder: "New Order",
+        toastAdd: "Item added to cart!",
+        emptyCart: "Your cart is empty.",
+        allCat: "ALL",
+        addBtn: "Add",
+        badgeHighlight: "HIGHLIGHT",
+        evidentLabel: "FEATURED"
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initApp();
+      document.getElementById('order-form').addEventListener('submit', handleOrderSubmit);
+    });
+
+    function fixDriveImageUrl(url) {
+      if (!url || url.trim() === '') return 'https://via.placeholder.com/400x250?text=Pizzaria+Victoria+Antunes';
+      const driveRegex = /\/d\/([a-zA-Z0-9_-]+)/;
+      const match = url.match(driveRegex);
+      return (match && match[1]) ? `https://lh3.googleusercontent.com/d/${match[1]}` : url;
+    }
+
+    function parsePrice(priceStr) {
+      if (!priceStr) return 0;
+      const num = parseFloat(String(priceStr).replace(/[^0-9.]/g, ''));
+      return isNaN(num) ? 0 : num;
+    }
+
+    function removeAccents(str) {
+      if (!str) return '';
+      return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function toggleTheme() {
+      const body = document.body;
+      const themeBtn = document.getElementById('theme-btn');
+      if (currentTheme === 'LIGHT') {
+        currentTheme = 'DARK';
+        body.classList.add('dark-theme');
+        themeBtn.innerHTML = '☀️ LIGHT';
+      } else {
+        currentTheme = 'LIGHT';
+        body.classList.remove('dark-theme');
+        themeBtn.innerHTML = '🌙 DARK';
+      }
+    }
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      document.getElementById('lang-pt').classList.toggle('active', lang === 'PT');
+      document.getElementById('lang-en').classList.toggle('active', lang === 'ENG');
+
+      const t = i18n[lang];
+      document.getElementById('txt-main-phrase').innerText = t.mainPhrase;
+      document.getElementById('txt-sec-phrase').innerText = t.secPhrase;
+      document.getElementById('search-input').placeholder = t.searchPlaceholder;
+      document.getElementById('txt-highlights-title').innerText = t.highlightsTitle;
+      document.getElementById('txt-view-order').innerText = t.viewOrder;
+      document.getElementById('txt-cart-title').innerText = t.cartTitle;
+      document.getElementById('lbl-service-type').innerText = t.serviceType;
+      document.getElementById('lbl-eat-in').innerText = t.eatIn;
+      document.getElementById('lbl-takeaway').innerText = t.takeaway;
+      document.getElementById('lbl-delivery').innerText = t.delivery;
+      document.getElementById('lbl-table-num').innerText = t.tableNum;
+      document.getElementById('table-num').placeholder = t.phTableNum;
+      document.getElementById('lbl-delivery-fee').innerHTML = t.deliveryFee;
+      document.getElementById('lbl-client-name').innerText = t.clientName;
+      document.getElementById('client-name').placeholder = t.phClientName;
+      document.getElementById('lbl-client-phone').innerText = t.clientPhone;
+      document.getElementById('client-phone').placeholder = t.phClientPhone;
+      document.getElementById('lbl-phone-inst').innerText = t.phoneInst;
+      document.getElementById('lbl-client-email').innerText = t.clientEmail;
+      document.getElementById('client-email').placeholder = t.phClientEmail;
+      document.getElementById('lbl-client-address').innerText = t.clientAddress;
+      document.getElementById('client-address').placeholder = t.phClientAddress;
+      document.getElementById('lbl-payment').innerText = t.payment;
+      document.getElementById('lbl-obs').innerText = t.obs;
+      document.getElementById('client-obs').placeholder = t.phObs;
+      document.getElementById('btn-back').innerText = t.btnBack;
+      document.getElementById('btn-confirm').innerText = t.btnConfirm;
+      document.getElementById('txt-success-title').innerText = t.successTitle;
+      document.getElementById('txt-success-msg').innerText = t.successMsg;
+      document.getElementById('txt-wa-btn').innerText = t.waBtn;
+      document.getElementById('btn-new-order').innerText = t.btnNewOrder;
+      document.getElementById('toast').innerText = t.toastAdd;
+
+      renderDropdownOptions();
+      initApp();
+      if (!document.getElementById('screen-2').classList.contains('hidden')) {
+        renderCartScreen();
+      }
+    }
+
+    function renderDropdownOptions() {
+      const t = i18n[currentLang];
+      const paySelect = document.getElementById('payment-method');
+      const currentPayVal = paySelect.value;
+      paySelect.innerHTML = `
+        <option value="">${t.paySelectDefault}</option>
+        <option value="Carteira Movel (M-Pesa)">${t.payMobileMpesa}</option>
+        <option value="Carteira Movel (e-Mola)">${t.payMobileEmola}</option>
+        <option value="Carteira Movel (mKesh)">${t.payMobileMkesh}</option>
+        <option value="Cartao de Debito/Credito">${t.payCard}</option>
+        <option value="Dinheiro (Cash)">${t.payCash}</option>
+      `;
+      paySelect.value = currentPayVal;
+    }
+
+    function isEvidentCategory(catName) {
+      const normalized = removeAccents(String(catName || '').toUpperCase());
+      return normalized === 'EXTRA' || normalized === 'ACOMPANHANTES' || normalized === 'ACCOMPANIMENTS';
+    }
+
+    function initApp() {
+      let catSet = new Set();
+      rawMenuData.forEach(item => {
+        catSet.add(currentLang === 'ENG' ? item.categoria_en : item.categoria);
+      });
+
+      const allText = i18n[currentLang].allCat;
+      categoriesList = [allText, ...Array.from(catSet)];
+      if (!categoriesList.includes(activeCategory)) activeCategory = allText;
+
+      renderDropdownOptions();
+      renderCategoriesNav();
+      renderHighlights();
+      renderMenu();
+      updateCartBadge();
+    }
+
+    function renderCategoriesNav() {
+      const nav = document.getElementById('categories-nav');
+      nav.innerHTML = categoriesList.map(cat => {
+        const featuredClass = isEvidentCategory(cat) ? 'featured-cat' : '';
+        const prefix = isEvidentCategory(cat) ? '✨ ' : '';
+        return `
+          <button class="cat-btn ${featuredClass} ${cat === activeCategory ? 'active' : ''}" onclick="selectCategory('${cat.replace(/'/g, "\\'")}')">
+            ${prefix}${cat}
+          </button>
+        `;
+      }).join('');
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      document.getElementById('search-input').value = '';
+      renderCategoriesNav();
+      renderMenu();
+    }
+
+    function renderHighlights() {
+      const highlights = rawMenuData.filter(item => item.destaque === 'SIM' || item.destaque === 'TRUE');
+      const container = document.getElementById('highlights-container');
+      const section = document.getElementById('highlights-section');
+
+      if (highlights.length === 0) {
+        section.classList.add('hidden');
+        return;
+      }
+
+      section.classList.remove('hidden');
+      const btnText = i18n[currentLang].addBtn;
+      container.innerHTML = highlights.map(item => {
+        const finalPrice = item.promo && item.promo !== '' ? item.promo : item.preco;
+        const name = currentLang === 'ENG' ? item.nome_en : item.nome;
+        const originalIdx = rawMenuData.indexOf(item);
+        return `
+          <div class="mini-card">
+            <div>
+              <img src="${fixDriveImageUrl(item.imagem)}" alt="${name}" />
+              <h4>${name}</h4>
+            </div>
+            <div>
+              <div class="price">${finalPrice}</div>
+              <button class="btn-add" onclick="addToCart(${originalIdx})">${btnText}</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function handleSearch() {
+      renderMenu();
+    }
+
+    function renderMenu() {
+      const container = document.getElementById('menu-container');
+      const searchQuery = removeAccents(document.getElementById('search-input').value.trim().toLowerCase());
+      const allText = i18n[currentLang].allCat;
+      const btnText = i18n[currentLang].addBtn;
+      const badgeText = i18n[currentLang].badgeHighlight;
+      const evidentLabel = i18n[currentLang].evidentLabel;
+
+      const filtered = rawMenuData.filter(item => {
+        const itemCat = currentLang === 'ENG' ? item.categoria_en : item.categoria;
+        const itemName = currentLang === 'ENG' ? item.nome_en : item.nome;
+        const itemDesc = currentLang === 'ENG' ? item.descricao_en : item.descricao;
+
+        const matchCategory = (activeCategory === allText) || (itemCat === activeCategory);
+        const matchSearch = searchQuery === '' ||
+          removeAccents(itemName.toLowerCase()).includes(searchQuery) ||
+          removeAccents(itemDesc.toLowerCase()).includes(searchQuery) ||
+          removeAccents(itemCat.toLowerCase()).includes(searchQuery);
+
+        return matchCategory && matchSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<p style="text-align:center; color:var(--text-gray); padding:30px 0;">Nenhum item encontrado.</p>`;
+        return;
+      }
+
+      const grouped = {};
+      filtered.forEach(item => {
+        const catName = currentLang === 'ENG' ? item.categoria_en : item.categoria;
+        if (!grouped[catName]) grouped[catName] = [];
+        grouped[catName].push(item);
+      });
+
+      let html = '';
+      Object.keys(grouped).forEach(catName => {
+        const evident = isEvidentCategory(catName);
+        html += `
+          <h2 class="category-group-heading ${evident ? 'evident-heading' : ''}">
+            <span>${evident ? '✨ ' : ''}${catName}</span>
+            ${evident ? `<span class="evident-pill">${evidentLabel}</span>` : ''}
+          </h2>
+        `;
+        html += `<div class="cards-grid">`;
+        grouped[catName].forEach(item => {
+          const originalIdx = rawMenuData.indexOf(item);
+          const name = currentLang === 'ENG' ? item.nome_en : item.nome;
+          const desc = currentLang === 'ENG' ? item.descricao_en : item.descricao;
+          const isHighlight = item.destaque === 'SIM' || item.destaque === 'TRUE';
+          const hasPromo = item.promo && item.promo.trim() !== '';
+          const displayPrice = evident ? `+${item.preco.replace('.00 MT', ' MT')}` : item.preco;
+
+          html += `
+            <div class="card ${evident ? 'evident-card' : ''}">
+              ${isHighlight ? `<span class="badge-destaque">⭐ ${badgeText}</span>` : ''}
+              <img class="card-img" src="${fixDriveImageUrl(item.imagem)}" alt="${name}" />
+              <div class="card-info">
+                <h3>${name}</h3>
+                <p>${desc}</p>
+                <div class="price-container">
+                  ${hasPromo ? `<span class="old-price">${displayPrice}</span><span class="current-price">${item.promo}</span>` : `<span class="current-price">${displayPrice}</span>`}
+                </div>
+              </div>
+              <button class="btn-add" onclick="addToCart(${originalIdx})">${btnText}</button>
+            </div>
+          `;
+        });
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function addToCart(index) {
+      const item = rawMenuData[index];
+      if (!item) return;
+
+      const finalPriceStr = (item.promo && item.promo.trim() !== '') ? item.promo : item.preco;
+      const numericPrice = parsePrice(finalPriceStr);
+
+      const existing = cart.find(c => c.index === index);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        cart.push({
+          index: index,
+          nome: item.nome,
+          nome_en: item.nome_en,
+          price: numericPrice,
+          qty: 1
+        });
+      }
+
+      updateCartBadge();
+      showToast();
+    }
+
+    function updateCartBadge() {
+      const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('cart-count').innerText = totalItems;
+    }
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.style.display = 'block';
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.style.display = 'none';
+      }, 1800);
+    }
+
+    function goToScreen(screenNum) {
+      document.getElementById('screen-1').classList.add('hidden');
+      document.getElementById('screen-2').classList.add('hidden');
+      document.getElementById('screen-3').classList.add('hidden');
+      document.getElementById('screen-admin').classList.add('hidden');
+
+      if (screenNum === 1) {
+        document.getElementById('screen-1').classList.remove('hidden');
+      } else if (screenNum === 2) {
+        renderCartScreen();
+        document.getElementById('screen-2').classList.remove('hidden');
+        window.scrollTo(0, 0);
+      } else if (screenNum === 3) {
+        document.getElementById('screen-3').classList.remove('hidden');
+        window.scrollTo(0, 0);
+      } else if (screenNum === 4) {
+        renderAdminERP();
+        document.getElementById('screen-admin').classList.remove('hidden');
+        window.scrollTo(0, 0);
+      }
+    }
+
+    function changeCartQty(cartIdx, delta) {
+      cart[cartIdx].qty += delta;
+      if (cart[cartIdx].qty <= 0) {
+        cart.splice(cartIdx, 1);
+      }
+      updateCartBadge();
+      renderCartScreen();
+    }
+
+    function calculateCartTotal() {
+      return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    }
+
+    function renderCartScreen() {
+      const listEl = document.getElementById('cart-items-list');
+      const totalEl = document.getElementById('cart-total-val');
+      const t = i18n[currentLang];
+
+      if (cart.length === 0) {
+        listEl.innerHTML = `<p style="text-align:center; color:var(--text-gray); padding:20px;">${t.emptyCart}</p>`;
+        totalEl.innerText = `Total: 0.00 MT`;
+        return;
+      }
+
+      listEl.innerHTML = cart.map((item, idx) => {
+        const displayName = currentLang === 'ENG' ? item.nome_en : item.nome;
+        const itemTotal = (item.price * item.qty).toFixed(2);
+        return `
+          <div class="cart-item">
+            <div>
+              <strong>${displayName}</strong>
+              <div style="font-size:0.85rem; color:var(--primary-red); font-weight:bold;">${itemTotal} MT</div>
+            </div>
+            <div class="cart-controls">
+              <button type="button" class="btn-qty" onclick="changeCartQty(${idx}, -1)">-</button>
+              <span style="font-weight:bold;">${item.qty}</span>
+              <button type="button" class="btn-qty" onclick="changeCartQty(${idx}, 1)">+</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      const total = calculateCartTotal();
+      totalEl.innerText = `Total: ${total.toFixed(2)} MT`;
+    }
+
+    function toggleOrderType() {
+      const orderType = document.querySelector('input[name="orderType"]:checked').value;
+      const tableGroup = document.getElementById('table-group');
+      const deliveryInfo = document.getElementById('delivery-info-group');
+
+      if (orderType === 'local') {
+        tableGroup.classList.remove('hidden');
+        deliveryInfo.classList.add('hidden');
+      } else if (orderType === 'delivery') {
+        tableGroup.classList.add('hidden');
+        deliveryInfo.classList.remove('hidden');
+      } else {
+        tableGroup.classList.add('hidden');
+        deliveryInfo.classList.add('hidden');
+      }
+    }
+
+    function captureLead() {
+      const nome = document.getElementById('client-name').value.trim();
+      const telefone = document.getElementById('client-phone').value.trim();
+      const email = document.getElementById('client-email').value.trim();
+
+      if (nome || telefone) {
+        const dataHora = new Date().toLocaleDateString('pt-PT') + ' ' + new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+        const leadData = { dataHora, nome, telefone, email };
+        localStorage.setItem('eaters_lead_abandoned', JSON.stringify(leadData));
+      }
+    }
+
+    function handleOrderSubmit(e) {
+      e.preventDefault();
+
+      if (cart.length === 0) {
+        alert(i18n[currentLang].emptyCart);
+        return;
+      }
+
+      const orderType = document.querySelector('input[name="orderType"]:checked').value;
+      const tableNum = document.getElementById('table-num').value.trim();
+      const nome = document.getElementById('client-name').value.trim();
+      const telefone = document.getElementById('client-phone').value.trim();
+      const email = document.getElementById('client-email').value.trim();
+      const endereco = document.getElementById('client-address').value.trim();
+      const pagamento = document.getElementById('payment-method').value;
+      const obs = document.getElementById('client-obs').value.trim();
+
+      let tipoLabel = 'Comer no Local';
+      if (orderType === 'local') {
+        tipoLabel = tableNum ? `Comer no Local (${tableNum})` : 'Comer no Local';
+      } else if (orderType === 'takeaway') {
+        tipoLabel = 'Takeaway';
+      } else if (orderType === 'delivery') {
+        tipoLabel = 'Delivery';
+      }
+
+      const finalTotal = calculateCartTotal();
+      const itensFormatados = cart.map(i => `${i.qty}x ${i.nome}`).join(' + ');
+
+      const numeroPedido = '#' + String(orderCounter).padStart(7, '0');
+      orderCounter++;
+      localStorage.setItem('eaters_order_seq', String(orderCounter));
+
+      const dataHora = new Date().toLocaleDateString('pt-PT') + ' ' + new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' });
+
+      const novoRelatorio = {
+        numeroPedido: numeroPedido,
+        dataHora: dataHora,
+        nome: nome,
+        telefone: telefone,
+        email: email,
+        endereco: endereco,
+        tipo: tipoLabel,
+        itens: itensFormatados,
+        totalNum: finalTotal,
+        status: 'pending',
+        pagamento: pagamento
+      };
+
+      const reports = JSON.parse(localStorage.getItem('eaters_reports') || '[]');
+      reports.unshift(novoRelatorio);
+      localStorage.setItem('eaters_reports', JSON.stringify(reports));
+
+      const itemsText = cart.map(i => `• ${i.qty}x ${i.nome} (${(i.price * i.qty).toFixed(2)} MT)`).join('\n');
+      const waMsg = [
+        `*NOVO PEDIDO - PIZZARIA VICTÓRIA ANTUNES*`,
+        `*Pedido:* ${numeroPedido}`,
+        `*Data/Hora:* ${dataHora}`,
+        `--------------------------`,
+        `*Cliente:* ${nome}`,
+        `*Telefone:* ${telefone}`,
+        `*Atendimento:* ${tipoLabel}`,
+        `*Endereço:* ${endereco}`,
+        `--------------------------`,
+        `*ITENS DO PEDIDO:*`,
+        itemsText,
+        `--------------------------`,
+        `*TOTAL A PAGAR:* ${finalTotal.toFixed(2)} MT`,
+        `*Pagamento:* ${pagamento}`,
+        obs ? `*Obs:* ${obs}` : null
+      ].filter(Boolean).join('\n');
+
+      const cleanPhone = String(STORE_WHATSAPP).replace(/\D/g, '');
+      const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(waMsg)}`;
+
+      const waBtn = document.getElementById('btn-whatsapp-direct');
+      waBtn.href = waUrl;
+
+      document.getElementById('order-number-display').innerText = numeroPedido;
+      goToScreen(3);
+
+      const openedWindow = window.open(waUrl, '_blank', 'noopener,noreferrer');
+      if (!openedWindow) {
+        waBtn.focus();
+      }
+    }
+
+    function startNewOrder() {
+      cart = [];
+      document.getElementById('btn-whatsapp-direct').href = '#';
+      document.getElementById('order-form').reset();
+      toggleOrderType();
+      updateCartBadge();
+      goToScreen(1);
+    }
+
+    // FUNÇÕES DO PAINEL ERP / ADMIN
+    function openAdminERP() {
+      goToScreen(4);
+    }
+
+    function renderAdminERP() {
+      const reports = JSON.parse(localStorage.getItem('eaters_reports') || '[]');
+      const tbody = document.getElementById('erp-table-body');
+      const countEl = document.getElementById('erp-stat-count');
+      const revEl = document.getElementById('erp-stat-revenue');
+
+      const totalRevenue = reports.reduce((sum, r) => sum + (parseFloat(r.totalNum) || 0), 0);
+      countEl.innerText = reports.length;
+      revEl.innerText = totalRevenue.toFixed(2) + ' MT';
+
+      if (reports.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--text-gray);">Nenhum pedido registado ainda.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = reports.map(r => `
+        <tr>
+          <td>${r.dataHora}</td>
+          <td><strong>${r.numeroPedido}</strong></td>
+          <td>${r.nome}</td>
+          <td>${r.tipo}</td>
+          <td>${r.itens}</td>
+          <td>${r.pagamento}</td>
+          <td><strong style="color:var(--primary-red);">${Number(r.totalNum).toFixed(2)} MT</strong></td>
+        </tr>
+      `).join('');
+    }
+
+    function exportOrdersToCSV() {
+      const reports = JSON.parse(localStorage.getItem('eaters_reports') || '[]');
+      if (reports.length === 0) {
+        alert('Não há pedidos para exportar.');
+        return;
+      }
+
+      const headers = ['Data/Hora', 'Pedido', 'Cliente', 'Telefone', 'Tipo', 'Itens', 'Pagamento', 'Total (MT)'];
+      const rows = reports.map(r => [
+        `"${r.dataHora}"`,
+        `"${r.numeroPedido}"`,
+        `"${r.nome}"`,
+        `"${r.telefone || ''}"`,
+        `"${r.tipo}"`,
+        `"${r.itens}"`,
+        `"${r.pagamento}"`,
+        `"${Number(r.totalNum).toFixed(2)}"`
+      ].join(','));
+
+      const csvContent = '\uFEFF' + [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pedidos_pizzaria_victoria_antunes.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
